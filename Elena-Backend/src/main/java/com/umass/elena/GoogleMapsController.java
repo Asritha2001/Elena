@@ -60,7 +60,7 @@ public class GoogleMapsController {
 }
 
 public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x) throws InterruptedException, ApiException, IOException {
-    List<Object> candidates = new ArrayList<>();
+      List<Object> candidates = new ArrayList<>();
     for (int i=0; i<routes.size(); i++){
         List<Object> triple = new ArrayList<>();
         DirectionsRoute r = routes.get(i);
@@ -69,6 +69,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
         triple.add(get_elevation(r));
         candidates.add(triple);
     }
+
     List<Object> results = new ArrayList<>();
     long min = Long.MAX_VALUE;
     int index = 0;
@@ -83,7 +84,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
     for (int j=0; j<candidates.size(); j++){
         if(j != index){
             long c1 = (long) ((List<Object>) candidates.get(j)).get(1);
-            if(c1<= c2){
+            if(c1<= (c2*(100+x)/100)){
                 results.add(candidates.get(j));
             }
         }
@@ -98,11 +99,16 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
 
   @CrossOrigin(origins = "http://localhost:3000")
   @GetMapping("/routes")
-  public DirectionsRoute[] getRoutes(@RequestParam String source,
-                                                 @RequestParam String destination,
-                                                 @RequestParam Integer x) throws IOException, InterruptedException, ApiException {
+  public List<Object> getRoutes(@RequestParam String source,
+                                @RequestParam String destination,
+                                @RequestParam Integer x) throws IOException, InterruptedException, ApiException {
 
-    var routes = googleMapsService.getRoutes(source, destination, x);
+      DirectionsRoute[] routes = googleMapsService.getRoutes(source, destination, x);
+      //System.out.println(routes);
+      List<DirectionsRoute> r = new ArrayList<>();
+      for (int e=0; e< routes.length; e++){
+          r.add(routes[e]);
+      }
 // possibles paths - distance, elevation
     
   Graph<String, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
@@ -129,26 +135,26 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
 
 
     // Dijkstra code
-    DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
-    GraphPath<String, DefaultWeightedEdge> path = shortestPath.getPath("21.02318860,79.06078510", "20.59348680,78.96281250");
-    if (path != null) {
-        System.out.println("Shortest Path: " + path.getVertexList());
-        System.out.println("Shortest Path Weight: " + path.getWeight());
-    } else {
-        System.out.println("No path found");
-    }
-
-    //bellman ford code
-    BellmanFordShortestPath<String, DefaultWeightedEdge> bellmanFord = new BellmanFordShortestPath<>(graph);
-    String sourceVertex = "21.02318860,79.06078510";
-    String destinationVertex = "20.59348680,78.96281250";
-    GraphPath<String, DefaultWeightedEdge> shortestPath_bellman = bellmanFord.getPath(sourceVertex, destinationVertex);
-    if (shortestPath_bellman != null) {
-        System.out.println("Shortest Path Bellman: " + shortestPath_bellman.getVertexList());
-        System.out.println("Shortest Path Weight: " + shortestPath_bellman.getWeight());
-    } else {
-        System.out.println("No path found");
-    }
+//    DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
+//    GraphPath<String, DefaultWeightedEdge> path = shortestPath.getPath("21.02318860,79.06078510", "20.59348680,78.96281250");
+//    if (path != null) {
+//        System.out.println("Shortest Path: " + path.getVertexList());
+//        System.out.println("Shortest Path Weight: " + path.getWeight());
+//    } else {
+//        System.out.println("No path found");
+//    }
+//
+//    //bellman ford code
+//    BellmanFordShortestPath<String, DefaultWeightedEdge> bellmanFord = new BellmanFordShortestPath<>(graph);
+//    String sourceVertex = "21.02318860,79.06078510";
+//    String destinationVertex = "20.59348680,78.96281250";
+//    GraphPath<String, DefaultWeightedEdge> shortestPath_bellman = bellmanFord.getPath(sourceVertex, destinationVertex);
+//    if (shortestPath_bellman != null) {
+//        System.out.println("Shortest Path Bellman: " + shortestPath_bellman.getVertexList());
+//        System.out.println("Shortest Path Weight: " + shortestPath_bellman.getWeight());
+//    } else {
+//        System.out.println("No path found");
+//    }
 
     // AStarShortestPath<String, DefaultWeightedEdge> a_star = new AStarShortestPath<>(graph, heuristic(sourceVertex));
 
@@ -161,7 +167,8 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
     //     System.out.println("No path found from " + sourceVertex + " to " + destinationVertex);
     // }
 
-  return routes;
+
+  return get_x_routes( r,x);
 
 }
 }
