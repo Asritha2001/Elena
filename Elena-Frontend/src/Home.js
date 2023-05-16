@@ -14,12 +14,13 @@ export const Home = ({ children }) => {
         if (source === '' || destination === '' || percentage === '') {
           alert('Please fill in all input fields.');
         } else {
-
-          sendDataToAnotherFile(source);
           navigate(`/possibleroutes/${source}/${destination}`);
           console.log('Source:', source);
           console.log('Destination:', destination);
           console.log('Percentage:', percentage);
+
+
+
 
           setSource('');
           setDestination('');
@@ -30,12 +31,6 @@ export const Home = ({ children }) => {
 
       <Link to={`/possibleroutes/${source}`}>Possible Routes</Link>
 
-      const sendDataToAnotherFile = (data) => {
-          // Do something with the data in another JavaScript file
-          // Example: import and call a function from another file
-          // AnotherFile.processData(data);
-          return source;
-        };
 
 
   return (

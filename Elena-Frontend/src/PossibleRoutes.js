@@ -10,6 +10,24 @@ function PossibleRoutes() {
   const navigate = useNavigate();
   console.log('Source:', source);
   const mapRef = useRef(null);
+  const percentage = 4;
+  const url1 = `http://localhost:8080/google-maps/routes?source=${source}&destination=${destination}&x=${percentage}`;
+  console.log(url1);
+  const [distances, setDistances] = useState([]);
+  const [times, setTimes] = useState([]);
+
+  fetch(url1, { method: 'GET', mode: 'cors' })
+    .then(response => response.json()) // Convert the response to JSON
+    .then(data => {
+      console.log(data); // Log the data
+
+      const distances = data.map(item => item.legs[0]?.distance?.humanReadable);
+      setDistances(distances);
+
+      const times = data.map(item => item.legs[0]?.duration?.humanReadable);
+      setTimes(times);
+    })
+    .catch(error => console.error(error));
 
   useEffect(() => {
     if (mapRef.current) {
@@ -111,9 +129,9 @@ function PossibleRoutes() {
                 <p>Possible Routes</p>
             </button>
             <button className="route" onClick={handleSubmit_2}>
-                  <p>Distance</p>
-                  <p>Elevation</p>
-                  <p>Time</p>
+                  <p>Distance : {distances[0]}</p>
+                  <p>Elevation : {percentage}</p>
+                  <p>Time : {times[0]}</p>
             </button>
           </div>
         </div>
