@@ -7,6 +7,7 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import java.io.IOException;
 import org.springframework.stereotype.Service;
+import com.google.maps.model.TravelMode;
 
 /**
  */
@@ -26,7 +27,8 @@ public class GoogleMapsService {
                                            .destination(destination)
                                            .await();
 
-    //
+    System.out.println(source);
+    System.out.println(destination);
     System.out.println(456);
 
     System.out.println(result.routes);

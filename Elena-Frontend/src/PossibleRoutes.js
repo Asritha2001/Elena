@@ -11,23 +11,42 @@ function PossibleRoutes() {
   console.log('Source:', source);
   const mapRef = useRef(null);
   const percentage = 4;
-  const url1 = `http://localhost:8080/google-maps/routes?source=${source}&destination=${destination}&x=${percentage}`;
-  console.log(url1);
+  const url = `http://localhost:8081/google-maps/routes?source=${source}&destination=${destination}&x=${percentage}&mode=walking`;
+  console.log(url);
   const [distances, setDistances] = useState([]);
   const [times, setTimes] = useState([]);
 
-  fetch(url1, { method: 'GET', mode: 'cors' })
-    .then(response => response.json()) // Convert the response to JSON
-    .then(data => {
-      console.log(data); // Log the data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(url, { method: 'GET', mode: 'cors' });
+        const data = await response.json();
+        console.log(data);
 
-      const distances = data.map(item => item.legs[0]?.distance?.humanReadable);
-      setDistances(distances);
+        const newDistances = [];
+        const newTimes = [];
 
-      const times = data.map(item => item.legs[0]?.duration?.humanReadable);
-      setTimes(times);
-    })
-    .catch(error => console.error(error));
+        data.forEach(item => {
+          const distance = item.legs[0]?.distance?.humanReadable;
+          const time = item.legs[0]?.duration?.humanReadable;
+          newDistances.push(distance);
+          newTimes.push(time);
+        });
+
+        setDistances(prevDistances => [...prevDistances, ...newDistances]);
+        setTimes(prevTimes => [...prevTimes, ...newTimes]);
+        console.log(distances);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url,setDistances]);
+
+    const distancesLength = distances.length;
+    console.log(distancesLength);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -124,15 +143,17 @@ function PossibleRoutes() {
             </button>
           </div>
 
-          <div className="routes">
+          <div className="routes" style={{ overflowY: 'auto', maxHeight: '450px' }}>
             <button className="routes1">
                 <p>Possible Routes</p>
             </button>
-            <button className="route" onClick={handleSubmit_2}>
-                  <p>Distance : {distances[0]}</p>
-                  <p>Elevation : {percentage}</p>
-                  <p>Time : {times[0]}</p>
-            </button>
+            {distances.map((distance, index) => (
+              <button className="route" key={index} onClick={handleSubmit_2}>
+                <p>Distance: {distance}</p>
+                <p>Elevation: {percentage}</p>
+                <p>Time: {times[index]}</p>
+              </button>
+            ))}
           </div>
         </div>
       </div>
