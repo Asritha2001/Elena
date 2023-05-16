@@ -15,6 +15,8 @@ function PossibleRoutes() {
   console.log(url);
   const [distances, setDistances] = useState([]);
   const [times, setTimes] = useState([]);
+  const [min_ele, setMinEle] = useState([]);
+  const [max_ele, setMaxEle] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,16 +27,28 @@ function PossibleRoutes() {
 
         const newDistances = [];
         const newTimes = [];
+        const newMinEle = [];
+        const newMaxEle = [];
 
         data.forEach(item => {
-          const distance = item.legs[0]?.distance?.humanReadable;
-          const time = item.legs[0]?.duration?.humanReadable;
+          console.log(item); // Check the structure of the item object
+          console.log(item[2]); // Check the value of the legs property
+          console.log(item[0].legs);
+          const distance = item[0].legs[0]?.distance?.humanReadable;
+          const time = item[0].legs[0]?.duration?.humanReadable;
+          const min_ele = item[2][0];
+          const max_ele = item[2][1];
           newDistances.push(distance);
           newTimes.push(time);
-        });
+          newMinEle.push(min_ele);
+          newMaxEle.push(max_ele);
+
+        })
 
         setDistances(prevDistances => [...prevDistances, ...newDistances]);
         setTimes(prevTimes => [...prevTimes, ...newTimes]);
+        setMinEle(prevMinEle => [...prevMinEle, ...newMinEle]);
+        setMaxEle(prevMaxEle => [...prevMaxEle, ...newMaxEle]);
         console.log(distances);
       } catch (error) {
         console.error(error);
@@ -150,7 +164,8 @@ function PossibleRoutes() {
             {distances.map((distance, index) => (
               <button className="route" key={index} onClick={handleSubmit_2}>
                 <p>Distance: {distance}</p>
-                <p>Elevation: {percentage}</p>
+                <p>Lowest Elevation: {min_ele}</p>
+                <p>Highest Elevation: {max_ele}</p>
                 <p>Time: {times[index]}</p>
               </button>
             ))}

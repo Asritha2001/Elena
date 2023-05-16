@@ -1,47 +1,54 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 import './RotatingContainers.css';
 
 const RotatingContainers = () => {
   const containerRef = useRef(null);
+  const [reviews, setReviews] = useState([]);
 
-    useEffect(() => {
-      const container = containerRef.current;
-      const scrollWidth = container.scrollWidth;
-      let scrollLeft = 0;
+  useEffect(() => {
 
-      const scrollContainers = () => {
-        scrollLeft += 0.05;
-        if (scrollLeft >= scrollWidth) {
-          scrollLeft = 0;
-        }
-        container.scrollLeft = scrollLeft;
-        requestAnimationFrame(scrollContainers);
-      };
 
+    const readReviewsFromFile = async () => {
+      try {
+        const response = await axios.get('http://localhost:9000/api/reviews');
+        setReviews(response.data.reviews);
+      } catch (error) {
+        console.error('Error reading reviews from file:', error);
+      }
+    };
+
+    // Choose either fetchReviews or readReviewsFromFile based on your requirement
+    //fetchReviews();
+    readReviewsFromFile();
+
+    const container = containerRef.current;
+    const scrollWidth = container.scrollWidth;
+    let scrollLeft = 0;
+
+    const scrollContainers = () => {
+      scrollLeft += 0.05;
+      if (scrollLeft >= scrollWidth) {
+        scrollLeft = 0;
+      }
+      container.scrollLeft = scrollLeft;
       requestAnimationFrame(scrollContainers);
+    };
 
-      return () => {
-        cancelAnimationFrame(scrollContainers);
-      };
-    }, []);
+    requestAnimationFrame(scrollContainers);
+
+    return () => {
+      cancelAnimationFrame(scrollContainers);
+    };
+  }, []);
 
   return (
     <div className="rotating-containers" ref={containerRef}>
-      <div className="container4">
-        <p>Container 1</p>
-      </div>
-      <div className="container4">
-        <p>Container 2</p>
-      </div>
-      <div className="container4">
-        <p>Container 3</p>
-      </div>
-      <div className="container4">
-        <p>Container 4</p>
-      </div>
-      <div className="container4">
-        <p>Container 5</p>
-      </div>
+      {reviews.map((review, index) => (
+        <div className="container4" key={index}>
+          <p>{review}</p>
+        </div>
+      ))}
     </div>
   );
 };

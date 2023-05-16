@@ -1,7 +1,14 @@
 package com.umass.elena;
 
 import com.arkondata.slothql.cypher.GraphPath;
+import com.google.maps.ElevationApi;
+import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsStep;
+import com.google.maps.model.ElevationResult;
+import com.google.maps.model.LatLng;
+
 import java.io.IOException;
 
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +21,9 @@ import org.jgrapht.alg.BellmanFordShortestPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.AStarShortestPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
-import com.google.maps.model.DirectionsLeg;
-import com.google.maps.model.DirectionsRoute;
-import com.google.maps.model.TravelMode;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -34,6 +38,62 @@ public class GoogleMapsController {
     this.googleMapsService = googleMapsService;
   }
 
+  public static List<Double> get_elevation(DirectionsRoute route) throws InterruptedException, ApiException, IOException {
+    List<Double> elevations = new ArrayList<>();
+    String apiKey = "AIzaSyA-UCoOovnOluxqPTNjCLQOPndIUa0Wf5A";
+    GeoApiContext context = new GeoApiContext.Builder()
+            .apiKey(apiKey)
+            .build();
+    DirectionsStep[] steps = route.legs[0].steps;
+    double maxElevation = 0;
+    double minElevation = Double.POSITIVE_INFINITY;
+    for (int i=0; i<steps.length; i++){
+        double latitude = steps[i].endLocation.lat;
+        double longitude = steps[i].endLocation.lng;
+        LatLng location = new LatLng(latitude, longitude);
+        ElevationResult[] results = ElevationApi.getByPoints(context, location).await();
+        double elevation = results[0].elevation;
+        maxElevation = Math.max(maxElevation, elevation);
+        minElevation = Math.min(minElevation, elevation);
+    }
+    elevations.add(minElevation);
+    elevations.add(maxElevation);
+    return elevations;
+}
+
+public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x) throws InterruptedException, ApiException, IOException {
+      List<Object> candidates = new ArrayList<>();
+    for (int i=0; i<routes.size(); i++){
+        List<Object> triple = new ArrayList<>();
+        DirectionsRoute r = routes.get(i);
+        triple.add(r);
+        triple.add(r.legs[0].distance.inMeters);
+        triple.add(get_elevation(r));
+        candidates.add(triple);
+    }
+
+    List<Object> results = new ArrayList<>();
+    long min = Long.MAX_VALUE;
+    int index = 0;
+    for (int i=0; i<candidates.size(); i++){
+        long c1 = (long) ((List<Object>) candidates.get(i)).get(1);
+        if(c1 < min){
+            min = c1;
+            index = i;
+        }
+    }
+    long c2 = (long) ((List<Object>) candidates.get(index)).get(1);
+    for (int j=0; j<candidates.size(); j++){
+        if(j != index){
+            long c1 = (long) ((List<Object>) candidates.get(j)).get(1);
+            if(c1<= (c2*(100+x)/100)){
+                results.add(candidates.get(j));
+            }
+        }
+    }
+    return results;
+}
+
 //   private static double heuristic(String vertex) {
 //     // Implement your heuristic function here like manhattan distance
 //     return 0.0;
@@ -42,19 +102,17 @@ public class GoogleMapsController {
 
   @CrossOrigin(origins = "http://localhost:3000")
   @GetMapping("/routes")
-  public List<DirectionsRoute> getRoutes(@RequestParam String source,
-                                                 @RequestParam String destination,
-                                                 @RequestParam Integer x) throws IOException, InterruptedException, ApiException, NullPointerException {
+//<<<<<<< HEAD
+  public List<Object> getRoutes(@RequestParam String source,
+                                @RequestParam String destination,
+                                @RequestParam Integer x) throws IOException, InterruptedException, ApiException {
 
-    DirectionsRoute[] routes = googleMapsService.getRoutes(source, destination, x);
-
-
-    //System.out.println(routes);
-    List<DirectionsRoute> r = new ArrayList<>();
-    for (int e=0; e< routes.length; e++){
-        r.add(routes[e]);
-    }
-    System.out.println(r);
+      DirectionsRoute[] routes = googleMapsService.getRoutes(source, destination, x);
+      //System.out.println(routes);
+      List<DirectionsRoute> r = new ArrayList<>();
+      for (int e=0; e< routes.length; e++){
+          r.add(routes[e]);
+      }
 // possibles paths - distance, elevation
     
   Graph<String, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
@@ -78,6 +136,7 @@ public class GoogleMapsController {
               graph.setEdgeWeight(edge, weight);
           }
 
+
       } catch (NullPointerException e) {
           // Exception handling code
           // Handle the NullPointerException
@@ -88,6 +147,19 @@ public class GoogleMapsController {
           // For example:
           // System.out.println("NullPointerException occurred: " + e.getMessage());
           // Show a user-friendly error message to the client or perform recovery actions
+//=======
+//          if (!graph.containsVertex(src)){
+//              graph.addVertex(src);
+//          }
+//          if (!graph.containsVertex(dest)) {
+//              graph.addVertex(dest);
+//          }
+//          boolean containsEdge = graph.containsEdge(src, dest);
+//          if(!containsEdge){
+//            DefaultWeightedEdge edge = graph.addEdge(src, dest);
+//            graph.setEdgeWeight(edge, weight);
+//          }
+//>>>>>>> origin/main
       }
 
 //      System.out.println("for loop 3");
@@ -96,7 +168,9 @@ public class GoogleMapsController {
 
 
     // Dijkstra code
-    DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
+
+//    DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
+
 //    GraphPath<String, DefaultWeightedEdge> path = shortestPath.getPath("21.02318860,79.06078510", "20.59348680,78.96281250");
 //    if (path != null) {
 //        System.out.println("Shortest Path: " + path.getVertexList());
@@ -128,7 +202,8 @@ public class GoogleMapsController {
     //     System.out.println("No path found from " + sourceVertex + " to " + destinationVertex);
     // }
 
-  return r;
+
+  return get_x_routes( r,x);
 
 }
 
