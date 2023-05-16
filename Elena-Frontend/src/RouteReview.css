@@ -15,6 +15,10 @@
   box-shadow: 0 2px 4px rgba(0.5, 0.5, 0.5, 0.5);
 }
 
+.App {
+background-color:#D9D9D9;
+}
+
 .app-name {
   margin-left: 10px;
   font-weight: bold;
@@ -25,31 +29,34 @@
 }
 
 
-.container {
+.container_1 {
   display: flex;
-  height: 100vh;
+  height: 80vh;
 }
 
-.left2 {
-    flex: 3;
+.container_2 {
+    text-align:center;
+  height: 80vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #D9D9D9;
+  padding: 0 60px;
+}
+
+.left3 {
+    flex:  1;
       display: flex;
       justify-content: center;
       align-items: center;
-  background-color: white;
+  background-color: #23A37C;
+  padding:20em 6em;
 }
 
-/*
-.map-container {
-  height: 73vh;
-  width: 90%;
-  position: unset !important;
-}
-*/
 
-.right2 {
-    flex: 2;
-    padding:6em 2em;
-    background-color: #9E9E9E;
+.right3 {
+    flex: 1;
+    padding:2em 2em;
+    background-color: #23A37C;
 }
 
 .data-container {
@@ -74,35 +81,22 @@
       background-color: #D9D9D9;
 }
 
-.data1 {
-display: block !important;
-margin-top : -10px;
-margin-bottom : -20px;
-margin-right :70px;
-font-size: 20px;
-  font-weight: bold;
-}
 
-.data2{
-
-margin-right :70px;
-font-size: 16px;
-}
-
-.transport {
+.transport1 {
     gap: 8px;
     display: flex;
-    width: 500px;
+    width: 400px;
     height: 50px;
     margin-bottom: 25px;
     padding: 16px 40px;
     font-size: 1.4rem;
     background-color: #D9D9D9;
+   justify-content: center;
+       align-items: center;
 }
 
-.location-data {
-
-    display: flex;
+.map-container-2 {
+    margin-top:40px;
 }
 
 .logo-container {
@@ -124,47 +118,6 @@ font-size: 16px;
     padding: 0 60px;
 }
 
-.title {
-    margin-bottom: 30px;
-    font-weight: bold;
-    font-size: 4rem;
-    color: #23A37C;
-}
-
-.description {
-    font-size: 1.9rem;
-    color: grey;
-}
-
-.input-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.input-field {
-  width: 90%;
-  max-width: 400px;
-  margin-bottom: 25px;
-  border: 1px solid #fff;
-  padding: 16px 40px;
-  border-radius: 25px;
-  font-size: 1.4rem;
-
-}
-
-.submit-button {
-    width: 120%;
-      max-width: 400px;
-      margin-bottom: 20px;
-      border: 1px solid black;
-      padding: 16px 40px;
-      border-radius: 25px;
-      font-size: 1.4rem;
-  cursor: pointer;
-  color: white;
-  background-color: black;
-}
 
 .submit-button-2 {
     width: 80px;
@@ -175,20 +128,47 @@ font-size: 16px;
   background-color: black;
 }
 
-.routes {
-    width: 500px;
-    height: 400px;
+.routes2 {
+    width: 480px;
+    height: 455px;
     padding: 16px 40px;
     font-size: 1.4rem;
-    background-color: #D9D9D9;
+    background-color: #FFFFFF;
+    border-radius:40px;
+    margin-top:10vh;
 }
 
-.possible_routes {
-    width: 420px;
-    height: 40px;
+.input-field-1 {
+  width: 90%;
+  max-width: 400px;
+  margin-bottom: 25px;
+  border: 1px solid #fff;
+  padding: 16px 40px;
+  border-radius: 25px;
+  font-size: 1.4rem;
+    background-color:#D9D9D9;
+}
+
+.submit-button-3 {
+    width: 100%;
+    max-width: 500px;
     padding: 16px 40px;
-    font-size: 1.4rem;
-    background-color: #23A37C;
-    justify-content: center;
-    align-items: center;
+      border-radius: 25px;
+      font-size: 1.4rem;
+  cursor: pointer;
+  color: #D9D9D9;
+  border: 1px solid #fff;
+  background-color: black;
+}
+
+
+.review_heading {
+font-size:40px;
+font-weight:bold;
+}
+
+.review_bar {
+background-color : white;
+width:100%;
+height:400px;
 }
