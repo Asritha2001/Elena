@@ -89,7 +89,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
             }
         }
     }
-    return results;
+    return candidates;
 }
 
 //   private static double heuristic(String vertex) {
