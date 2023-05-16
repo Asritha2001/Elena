@@ -1,8 +1,14 @@
 package com.umass.elena;
 
 import com.arkondata.slothql.cypher.GraphPath;
+import com.google.maps.ElevationApi;
+import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsStep;
+import com.google.maps.model.ElevationResult;
+import com.google.maps.model.LatLng;
+
 import java.io.IOException;
 
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +21,8 @@ import org.jgrapht.alg.BellmanFordShortestPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.AStarShortestPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -27,6 +35,61 @@ public class GoogleMapsController {
   public GoogleMapsController(GoogleMapsService googleMapsService) {
     this.googleMapsService = googleMapsService;
   }
+
+  public static List<Double> get_elevation(DirectionsRoute route) throws InterruptedException, ApiException, IOException {
+    List<Double> elevations = new ArrayList<>();
+    String apiKey = "AIzaSyA-UCoOovnOluxqPTNjCLQOPndIUa0Wf5A";
+    GeoApiContext context = new GeoApiContext.Builder()
+            .apiKey(apiKey)
+            .build();
+    DirectionsStep[] steps = route.legs[0].steps;
+    double maxElevation = 0;
+    double minElevation = Double.POSITIVE_INFINITY;
+    for (int i=0; i<steps.length; i++){
+        double latitude = steps[i].endLocation.lat;
+        double longitude = steps[i].endLocation.lng;
+        LatLng location = new LatLng(latitude, longitude);
+        ElevationResult[] results = ElevationApi.getByPoints(context, location).await();
+        double elevation = results[0].elevation;
+        maxElevation = Math.max(maxElevation, elevation);
+        minElevation = Math.min(minElevation, elevation);
+    }
+    elevations.add(minElevation);
+    elevations.add(maxElevation);
+    return elevations;
+}
+
+public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x) throws InterruptedException, ApiException, IOException {
+    List<Object> candidates = new ArrayList<>();
+    for (int i=0; i<routes.size(); i++){
+        List<Object> triple = new ArrayList<>();
+        DirectionsRoute r = routes.get(i);
+        triple.add(r);
+        triple.add(r.legs[0].distance.inMeters);
+        triple.add(get_elevation(r));
+        candidates.add(triple);
+    }
+    List<Object> results = new ArrayList<>();
+    long min = Long.MAX_VALUE;
+    int index = 0;
+    for (int i=0; i<candidates.size(); i++){
+        long c1 = (long) ((List<Object>) candidates.get(i)).get(1);
+        if(c1 < min){
+            min = c1;
+            index = i;
+        }
+    }
+    long c2 = (long) ((List<Object>) candidates.get(index)).get(1);
+    for (int j=0; j<candidates.size(); j++){
+        if(j != index){
+            long c1 = (long) ((List<Object>) candidates.get(j)).get(1);
+            if(c1<= c2){
+                results.add(candidates.get(j));
+            }
+        }
+    }
+    return results;
+}
 
 //   private static double heuristic(String vertex) {
 //     // Implement your heuristic function here like manhattan distance
@@ -56,8 +119,11 @@ public class GoogleMapsController {
           if (!graph.containsVertex(dest)) {
               graph.addVertex(dest);
           }
-          DefaultWeightedEdge edge = graph.addEdge(src, dest);
-          graph.setEdgeWeight(edge, weight);
+          boolean containsEdge = graph.containsEdge(src, dest);
+          if(!containsEdge){
+            DefaultWeightedEdge edge = graph.addEdge(src, dest);
+            graph.setEdgeWeight(edge, weight);
+          }
       }
     }
 

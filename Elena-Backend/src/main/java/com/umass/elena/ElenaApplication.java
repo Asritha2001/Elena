@@ -1,6 +1,5 @@
 package com.umass.elena;
 
-import com.google.maps.model.DirectionsRoute;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
