@@ -23,7 +23,7 @@ import org.jgrapht.alg.shortestpath.AStarShortestPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.text.DecimalFormat;
 
 
 @RestController
@@ -36,8 +36,9 @@ public class GoogleMapsController {
     this.googleMapsService = googleMapsService;
   }
 
-  public static List<Double> get_elevation(DirectionsRoute route) throws InterruptedException, ApiException, IOException {
-    List<Double> elevations = new ArrayList<>();
+  public static List<String> get_elevation(DirectionsRoute route) throws InterruptedException, ApiException, IOException {
+    List<String> elevations = new ArrayList<>();
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
     String apiKey = "AIzaSyA-UCoOovnOluxqPTNjCLQOPndIUa0Wf5A";
     GeoApiContext context = new GeoApiContext.Builder()
             .apiKey(apiKey)
@@ -54,8 +55,8 @@ public class GoogleMapsController {
         maxElevation = Math.max(maxElevation, elevation);
         minElevation = Math.min(minElevation, elevation);
     }
-    elevations.add(minElevation);
-    elevations.add(maxElevation);
+    elevations.add(decimalFormat.format(minElevation));
+    elevations.add(decimalFormat.format(maxElevation));
     return elevations;
 }
 
