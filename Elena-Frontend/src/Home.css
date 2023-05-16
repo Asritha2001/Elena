@@ -1,0 +1,94 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 77%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 10px;
+  color: white;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  border-radius: 50px;
+  box-shadow: 0 2px 4px rgba(0.5, 0.5, 0.5, 0.5);
+}
+
+.app-name {
+  margin-left: 10px;
+  font-weight: bold;
+  font-size:1.8rem;
+  color: #23A37C;
+}
+
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.left, .right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.left {
+  background-color: white;
+}
+
+.right {
+  background-color: #23A37C;
+}
+
+.container1 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 60px;
+}
+
+.title {
+    margin-top: -150px !important;
+    margin-bottom: -60px !important;
+    font-weight: bold;
+    font-size: 4rem;
+    color: #23A37C;
+}
+
+.description {
+    font-size: 1.9rem;
+    color: grey;
+}
+
+.input-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input-field {
+  width: 90%;
+  max-width: 400px;
+  margin-bottom: 25px;
+  border: 1px solid #fff;
+  padding: 16px 40px;
+  border-radius: 25px;
+  font-size: 1.4rem;
+
+}
+
+.submit-button {
+    width: 120%;
+      max-width: 400px;
+      margin-bottom: 20px;
+      border: 1px solid black;
+      padding: 16px 40px;
+      border-radius: 25px;
+      font-size: 1.4rem;
+  cursor: pointer;
+  color: white;
+  background-color: black;
+}
