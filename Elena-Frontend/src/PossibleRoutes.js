@@ -8,15 +8,13 @@ function PossibleRoutes() {
   const { source, destination } = useParams();
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
   const navigate = useNavigate();
-  console.log('Source:', source);
   const mapRef = useRef(null);
   const percentage = 4;
   const url = `http://localhost:8081/google-maps/routes?source=${source}&destination=${destination}&x=${percentage}&mode=walking`;
-  console.log(url);
   const [distances, setDistances] = useState([]);
   const [times, setTimes] = useState([]);
-  const [min_ele, setMinEle] = useState([]);
-  const [max_ele, setMaxEle] = useState([]);
+  const [min_eles, setMinEle] = useState([]);
+  const [max_eles, setMaxEle] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,9 +29,9 @@ function PossibleRoutes() {
         const newMaxEle = [];
 
         data.forEach(item => {
-          console.log(item); // Check the structure of the item object
+//          console.log(item); // Check the structure of the item object
           console.log(item[2]); // Check the value of the legs property
-          console.log(item[0].legs);
+//          console.log(item[0].legs);
           const distance = item[0].legs[0]?.distance?.humanReadable;
           const time = item[0].legs[0]?.duration?.humanReadable;
           const min_ele = item[2][0];
@@ -49,7 +47,6 @@ function PossibleRoutes() {
         setTimes(prevTimes => [...prevTimes, ...newTimes]);
         setMinEle(prevMinEle => [...prevMinEle, ...newMinEle]);
         setMaxEle(prevMaxEle => [...prevMaxEle, ...newMaxEle]);
-        console.log(distances);
       } catch (error) {
         console.error(error);
       }
@@ -58,9 +55,6 @@ function PossibleRoutes() {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url,setDistances]);
-
-    const distancesLength = distances.length;
-    console.log(distancesLength);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -164,8 +158,8 @@ function PossibleRoutes() {
             {distances.map((distance, index) => (
               <button className="route" key={index} onClick={handleSubmit_2}>
                 <p>Distance: {distance}</p>
-                <p>Lowest Elevation: {min_ele}</p>
-                <p>Highest Elevation: {max_ele}</p>
+                <p>Lowest Elevation: {min_eles[index]}</p>
+                <p>Highest Elevation: {max_eles[index]}</p>
                 <p>Time: {times[index]}</p>
               </button>
             ))}
