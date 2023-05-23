@@ -31,15 +31,15 @@ import org.jgrapht.graph.*;
 
 
 @RestController
-@RequestMapping("google-maps")
-public class GoogleMapsController {
+@RequestMapping("google-maps")  // requesting to map with google maps
+public class GoogleMapsController {   // this class has all the funcions required
 
   private final GoogleMapsService googleMapsService;
 
   public GoogleMapsController(GoogleMapsService googleMapsService) {
-    this.googleMapsService = googleMapsService;
+    this.googleMapsService = googleMapsService;   // talkin with google maps api
   }
-
+// this funciton gets the elevation given a route
   public static List<String> get_elevation(DirectionsRoute route) throws InterruptedException, ApiException, IOException {
     List<String> elevations = new ArrayList<>();
     DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -51,19 +51,19 @@ public class GoogleMapsController {
     double maxElevation = 0;
     double minElevation = Double.POSITIVE_INFINITY;
     for (int i=0; i<steps.length; i++){
-        double latitude = steps[i].endLocation.lat;
+        double latitude = steps[i].endLocation.lat;  // getting the lat and long of the route
         double longitude = steps[i].endLocation.lng;
         LatLng location = new LatLng(latitude, longitude);
-        ElevationResult[] results = ElevationApi.getByPoints(context, location).await();
+        ElevationResult[] results = ElevationApi.getByPoints(context, location).await(); // using the elevations api from google maps
         double elevation = results[0].elevation;
         maxElevation = Math.max(maxElevation, elevation);
         minElevation = Math.min(minElevation, elevation);
     }
     elevations.add(decimalFormat.format(minElevation));
     elevations.add(decimalFormat.format(maxElevation));
-    return elevations;
+    return elevations; // returning both minimum and maximum elevation
 }
-
+// this funciotn gets all the routes possible from google maps api
 public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x) throws InterruptedException, ApiException, IOException {
       List<Object> candidates = new ArrayList<>();
     for (int i=0; i<routes.size(); i++){
@@ -94,7 +94,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
             }
         }
     }
-    return candidates;
+    return candidates; // returning the distance elevation and route.
 }
 
 //   private static double heuristic(String vertex) {
@@ -118,7 +118,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
       String source_vertex = String.valueOf(r.get(1).legs[0].startLocation);
       String destination_vertex = String.valueOf(r.get(1).legs[0].endLocation);
 // possibles paths - distance, elevation
-    
+    // creating a graph
   Graph<String, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
   for (int i = 0; i < routes.length; i++) {
       DirectionsRoute route = routes[i];
@@ -127,7 +127,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
           String src = String.valueOf(route.legs[0].steps[j].startLocation);
           Long weight = route.legs[0].steps[j].distance.inMeters;
 
-          if (!graph.containsVertex(src)){
+          if (!graph.containsVertex(src)){ // checking if the graph already has vertex before adding it.
               graph.addVertex(src);
           }
           if (!graph.containsVertex(dest)) {
@@ -151,7 +151,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
         if (dijkstra_path != null) {
             System.out.println("Shortest Path: " + dijkstra_path.getVertexList());
             System.out.println("Shortest Path Weight: " + dijkstra_path.getWeight());
-            algo_paths.add(dijkstra_path.getVertexList());
+            algo_paths.add(dijkstra_path.getVertexList()); // getting the shortest path
             algo_paths.add(dijkstra_path.getWeight());
 
         } else {
@@ -204,7 +204,7 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
     all_routes.add(algo_paths);
     all_routes.add(get_x_routes(r, x));
 
-  return all_routes;
+  return all_routes; // sending all the routes possible along with the ones from algorithms to the front end.
 
 }
 }
