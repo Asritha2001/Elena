@@ -12,7 +12,7 @@ import com.google.maps.model.TravelMode;
 /**
  */
 @Service
-public class GoogleMapsService {
+public class GoogleMapsService {  // this is the main class that talks with the google maps api to get the results given the source and destination.
 
   public DirectionsRoute[] getRoutes(String source, String destination, Integer x)
       throws IOException, InterruptedException, ApiException {
