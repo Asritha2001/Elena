@@ -18,7 +18,7 @@ public class GoogleMapsService {
       throws IOException, InterruptedException, ApiException {
 
     GeoApiContext context = new GeoApiContext.Builder()
-        .apiKey("AIzaSyA-UCoOovnOluxqPTNjCLQOPndIUa0Wf5A")
+        .apiKey("AIzaSyDFWQUqp3hlC5sR9YetyObvoTGuyIudBtY")
         .build();
 
     DirectionsResult result = DirectionsApi.newRequest(context)

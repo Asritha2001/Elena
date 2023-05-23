@@ -41,7 +41,7 @@ public class GoogleMapsController {
   public static List<String> get_elevation(DirectionsRoute route) throws InterruptedException, ApiException, IOException {
     List<String> elevations = new ArrayList<>();
     DecimalFormat decimalFormat = new DecimalFormat("#.##");
-    String apiKey = "AIzaSyA-UCoOovnOluxqPTNjCLQOPndIUa0Wf5A";
+    String apiKey = "AIzaSyDFWQUqp3hlC5sR9YetyObvoTGuyIudBtY";
     GeoApiContext context = new GeoApiContext.Builder()
             .apiKey(apiKey)
             .build();

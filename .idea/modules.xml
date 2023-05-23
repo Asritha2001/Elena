@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Elena.iml" filepath="$PROJECT_DIR$/.idea/Elena.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Elena-Backend/elena.iml" filepath="$PROJECT_DIR$/Elena-Backend/elena.iml" />
     </modules>
   </component>
 </project>
