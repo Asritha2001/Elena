@@ -1,6 +1,5 @@
 package com.umass.elena;
 
-import com.arkondata.slothql.cypher.GraphPath;
 import com.google.maps.ElevationApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
@@ -25,6 +24,9 @@ import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.DecimalFormat;
+import org.jgrapht.*;
+import org.jgrapht.alg.shortestpath.*;
+import org.jgrapht.graph.*;
 
 
 
@@ -103,7 +105,6 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
 
   @CrossOrigin(origins = "http://localhost:3000")
   @GetMapping("/routes")
-//<<<<<<< HEAD
   public List<Object> getRoutes(@RequestParam String source,
                                 @RequestParam String destination,
                                 @RequestParam Integer x) throws IOException, InterruptedException, ApiException {
@@ -114,83 +115,78 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
       for (int e=0; e< routes.length; e++){
           r.add(routes[e]);
       }
+      String source_vertex = String.valueOf(r.get(1).legs[0].startLocation);
+      String destination_vertex = String.valueOf(r.get(1).legs[0].endLocation);
 // possibles paths - distance, elevation
     
   Graph<String, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
   for (int i = 0; i < routes.length; i++) {
       DirectionsRoute route = routes[i];
-//      System.out.println("for loop");
-      //System.out.println(route);
-      try {
-          for(int j=0; j< route.legs[0].steps.length; j++){
-              String dest = String.valueOf(route.legs[0].steps[j].endLocation);
-              String src = String.valueOf(route.legs[0].steps[j].startLocation);
-              Long weight = route.legs[0].steps[j].distance.inMeters;
-//          System.out.println("for loop 2");
-              if (!graph.containsVertex(src)){
-                  graph.addVertex(src);
-              }
-              if (!graph.containsVertex(dest)) {
-                  graph.addVertex(dest);
-              }
-              DefaultWeightedEdge edge = graph.addEdge(src, dest);
-              graph.setEdgeWeight(edge, weight);
+      for(int j=0; j< route.legs[0].steps.length; j++){
+          String dest = String.valueOf(route.legs[0].steps[j].endLocation);
+          String src = String.valueOf(route.legs[0].steps[j].startLocation);
+          Long weight = route.legs[0].steps[j].distance.inMeters;
+
+          if (!graph.containsVertex(src)){
+              graph.addVertex(src);
           }
-
-
-      } catch (NullPointerException e) {
-          // Exception handling code
-          // Handle the NullPointerException
-          // Log the error or display an appropriate error message
-//          e.printStackTrace(); // Print the stack trace for debugging purposes
-
-          // Optionally, you can provide a custom error message or perform specific error handling logic
-          // For example:
-          // System.out.println("NullPointerException occurred: " + e.getMessage());
-          // Show a user-friendly error message to the client or perform recovery actions
-//=======
-//          if (!graph.containsVertex(src)){
-//              graph.addVertex(src);
-//          }
-//          if (!graph.containsVertex(dest)) {
-//              graph.addVertex(dest);
-//          }
-//          boolean containsEdge = graph.containsEdge(src, dest);
-//          if(!containsEdge){
-//            DefaultWeightedEdge edge = graph.addEdge(src, dest);
-//            graph.setEdgeWeight(edge, weight);
-//          }
-//>>>>>>> origin/main
+          if (!graph.containsVertex(dest)) {
+              graph.addVertex(dest);
+          }
+          boolean containsEdge = graph.containsEdge(src, dest);
+          if(!containsEdge){
+            DefaultWeightedEdge edge = graph.addEdge(src, dest);
+            graph.setEdgeWeight(edge, weight);
+          }
       }
-
-//      System.out.println("for loop 3");
     }
-//    System.out.println("for loop 4");
 
 
     // Dijkstra code
+    //System.out.println("************************");
+    DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
+    List <Object> algo_paths = new ArrayList<>();
+    if(graph.containsVertex(source_vertex) && graph.containsVertex(destination_vertex)) {
+        GraphPath<String, DefaultWeightedEdge> dijkstra_path = shortestPath.getPath(source_vertex, destination_vertex);
+        if (dijkstra_path != null) {
+            System.out.println("Shortest Path: " + dijkstra_path.getVertexList());
+            System.out.println("Shortest Path Weight: " + dijkstra_path.getWeight());
+            algo_paths.add(dijkstra_path.getVertexList());
+            algo_paths.add(dijkstra_path.getWeight());
 
-//    DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
+        } else {
+            List<String> emptyList = new ArrayList<>();
+            algo_paths.addAll(emptyList);
+            algo_paths.add(0.0);
+        }
+    }
+    else{
+        List<String> emptyList = new ArrayList<>();
+        algo_paths.addAll(emptyList);
+        algo_paths.add(0.0);
+    }
 
-//    GraphPath<String, DefaultWeightedEdge> path = shortestPath.getPath("21.02318860,79.06078510", "20.59348680,78.96281250");
-//    if (path != null) {
-//        System.out.println("Shortest Path: " + path.getVertexList());
-//        System.out.println("Shortest Path Weight: " + path.getWeight());
-//    } else {
-//        System.out.println("No path found");
-//    }
-//
-//    //bellman ford code
-//    BellmanFordShortestPath<String, DefaultWeightedEdge> bellmanFord = new BellmanFordShortestPath<>(graph);
-//    String sourceVertex = "21.02318860,79.06078510";
-//    String destinationVertex = "20.59348680,78.96281250";
-//    GraphPath<String, DefaultWeightedEdge> shortestPath_bellman = bellmanFord.getPath(sourceVertex, destinationVertex);
-//    if (shortestPath_bellman != null) {
-//        System.out.println("Shortest Path Bellman: " + shortestPath_bellman.getVertexList());
-//        System.out.println("Shortest Path Weight: " + shortestPath_bellman.getWeight());
-//    } else {
-//        System.out.println("No path found");
-//    }
+   //bellman ford code
+   BellmanFordShortestPath<String, DefaultWeightedEdge> bellmanFord = new BellmanFordShortestPath<>(graph);
+   if(graph.containsVertex(source_vertex) && graph.containsVertex(destination_vertex)) {
+        GraphPath<String, DefaultWeightedEdge> shortestPath_bellman = bellmanFord.getPath(source_vertex, destination_vertex );
+        if (shortestPath_bellman != null) {
+            System.out.println("Shortest Path Bellman: " + shortestPath_bellman.getVertexList());
+            System.out.println("Shortest Path Weight: " + shortestPath_bellman.getWeight());
+            algo_paths.add(shortestPath_bellman.getVertexList());
+            algo_paths.add(shortestPath_bellman.getWeight());
+        } else {
+            System.out.println("No path found");
+            List<String> emptyList = new ArrayList<>();
+            algo_paths.addAll(emptyList);
+            algo_paths.add(0.0);
+        }
+    }
+    else{
+        List<String> emptyList = new ArrayList<>();
+        algo_paths.addAll(emptyList);
+        algo_paths.add(0.0);
+    }
 
     // AStarShortestPath<String, DefaultWeightedEdge> a_star = new AStarShortestPath<>(graph, heuristic(sourceVertex));
 
@@ -202,11 +198,13 @@ public static List<Object> get_x_routes(List<DirectionsRoute> routes, Integer x)
     // } else {
     //     System.out.println("No path found from " + sourceVertex + " to " + destinationVertex);
     // }
+    
 
+    List<Object> all_routes = new ArrayList<>();
+    all_routes.add(algo_paths);
+    all_routes.add(get_x_routes(r, x));
 
-  return get_x_routes( r,x);
+  return all_routes;
 
 }
-
-
 }
