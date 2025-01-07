@@ -9,7 +9,18 @@ Run the command : npm start
 To run the back-end part go to the folder : ELENA/Elena-Backend/src/main/java/com/umass/elena
 Run the command : mvn spring-boot:run.
 
+# Application Output
 
+## Homepage
+![Homepage](https://github.com/Asritha2001/Elena/blob/main/Homepage.png)
+
+![Homepage](https://github.com/Asritha2001/Elena/blob/main/Routes1.png)
+
+![Homepage](https://github.com/Asritha2001/Elena/blob/main/Routes2.png)
+
+![Homepage](https://github.com/Asritha2001/Elena/blob/main/Review1.png)
+
+![Homepage](https://github.com/Asritha2001/Elena/blob/main/Review2.png)
 
 Work Done : 
 
