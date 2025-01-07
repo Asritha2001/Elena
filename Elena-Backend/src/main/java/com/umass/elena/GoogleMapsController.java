@@ -12,7 +12,6 @@ import java.io.IOException;
 
 import org.springframework.web.bind.annotation.*;
 import org.assertj.core.api.PathAssert;
-import org.jgrapht.Graph;
 import org.jgrapht.graph.*;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -43,7 +42,7 @@ public class GoogleMapsController {   // this class has all the funcions require
   public static List<String> get_elevation(DirectionsRoute route) throws InterruptedException, ApiException, IOException {
     List<String> elevations = new ArrayList<>();
     DecimalFormat decimalFormat = new DecimalFormat("#.##");
-    String apiKey = "AIzaSyDFWQUqp3hlC5sR9YetyObvoTGuyIudBtY";
+    String apiKey = process.env.GOOGLE_API_KEY;
     GeoApiContext context = new GeoApiContext.Builder()
             .apiKey(apiKey)
             .build();
